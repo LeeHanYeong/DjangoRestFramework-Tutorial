@@ -9,7 +9,7 @@ from snippets.serializers import SnippetSerializer
 
 
 @api_view(['GET', 'POST'])
-def snippet_list(request):
+def snippet_list(request, format=None):
     """
     코드 조각을 모두 보여주거나 새 코드 조각을 만듭니다.
     """
@@ -27,7 +27,7 @@ def snippet_list(request):
 
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def snippet_detail(request, pk):
+def snippet_detail(request, pk, format=None):
     """
     코드 조각 조회, 업데이트, 삭제
     """
