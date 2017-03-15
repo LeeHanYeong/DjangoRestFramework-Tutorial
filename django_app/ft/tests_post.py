@@ -1,10 +1,13 @@
 import random
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APILiveServerTestCase
 
 from snippets.models import Snippet
+
+User = get_user_model()
 
 
 class SnippetTest(APILiveServerTestCase):
@@ -13,6 +16,16 @@ class SnippetTest(APILiveServerTestCase):
     default_linenos = False
     default_language = 'python'
     default_style = 'friendly'
+
+    test_username = 'test_username'
+    test_password = 'test_password'
+
+    def create_user(self):
+        user = User.objects.create_user(
+            username=self.test_username,
+            password=self.test_password,
+        )
+        return user
 
     def create_snippet(self, num=1):
         """
@@ -34,9 +47,17 @@ class SnippetTest(APILiveServerTestCase):
                 return response
 
     def test_snippet_list(self):
+        # Snippet목록을 생성하기 전에 인증을 위해 유저를 생성하고 로그인
+        self.create_user()
+        self.client.login(username=self.test_username, password=self.test_password)
+
+        # 1~20개중 랜덤하게 Snippet을 생성
         num = random.randrange(1, 20)
         self.create_snippet(num)
+
+        # num값과 일치하는 개수만큼 Snippet이 생성되었는지 확인
         self.assertEqual(Snippet.objects.count(), num)
+
         # values_list를 사용해서 필요한 항목만 가져올 경우
         for index, snippet_value_tuple in enumerate(Snippet.objects.values_list('title', 'code')):
             self.assertEqual(snippet_value_tuple[0], self.test_title.format(index + 1))
@@ -48,7 +69,14 @@ class SnippetTest(APILiveServerTestCase):
             self.assertEqual(snippet.code, self.test_code.format('!' * (index + 1)))
 
     def test_snippet_create(self):
+        # Create이전에 인증을 위해 유저를 생성하고 로그인 시킴
+        self.create_user()
+        self.client.login(username=self.test_username, password=self.test_password)
+
+        # Snippet생성 요청
         response = self.create_snippet()
+
+        # 생성 후 response가 올바른지 테스트
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('title'), self.test_title.format(1))
         self.assertEqual(response.data.get('code'), self.test_code.format('!'))
