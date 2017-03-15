@@ -6,6 +6,6 @@ from rest_framework.views import APIView
 class ApiRoot(APIView):
     def get(self, request, format=None):
         return Response({
-            'users': reverse('member:user_list', request=request, format=format),
-            'snippets': reverse('snippets:snippet_list', request=request, format=format)
+            'users': reverse('member:myuser-list', request=request, format=format),
+            'snippets': reverse('snippets:snippets-list', request=request, format=format)
         })

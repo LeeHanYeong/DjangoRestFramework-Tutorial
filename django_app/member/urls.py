@@ -2,7 +2,6 @@ from django.conf.urls import url
 
 from . import views
 
-
 user_list = views.UserViewSet.as_view({
     'get': 'list',
 })

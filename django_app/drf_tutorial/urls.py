@@ -15,13 +15,19 @@ Including another URLconf
 # """
 from django.conf.urls import url, include
 from django.contrib import admin
-from . import views
+from rest_framework.routers import DefaultRouter
+
+from member import views as member_views
+from snippets import views as snippets_views
+
+router = DefaultRouter()
+router.register(r'snippets', snippets_views.cbv.SnippetViewSet)
+router.register(r'member', member_views.UserViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^snippets/', include('snippets.urls')),
-    url(r'^member/', include('member.urls')),
-    url(r'^$', views.ApiRoot.as_view()),
+    url(r'^', include(router.urls)),
+
     url(r'^api-auth/',
         include(
             'rest_framework.urls',
