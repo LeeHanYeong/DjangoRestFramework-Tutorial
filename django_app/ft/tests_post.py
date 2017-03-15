@@ -37,7 +37,7 @@ class SnippetTest(APILiveServerTestCase):
         for i in range(num):
             test_title = self.test_title.format(i + 1)
             test_code = self.test_code.format('!' * (i + 1))
-            url = reverse('snippet:list')
+            url = reverse('snippets:snippet_list')
             data = {
                 'title': test_title,
                 'code': test_code,
@@ -68,6 +68,12 @@ class SnippetTest(APILiveServerTestCase):
             self.assertEqual(snippet.title, self.test_title.format(index + 1))
             self.assertEqual(snippet.code, self.test_code.format('!' * (index + 1)))
 
+    def test_snippet_cannot_create_no_authenticate(self):
+        # Snippet생성 요청
+        response = self.create_snippet()
+        # 생성 후 response가 올바른지 테스트
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_snippet_create(self):
         # Create이전에 인증을 위해 유저를 생성하고 로그인 시킴
         self.create_user()
@@ -94,4 +100,13 @@ class SnippetTest(APILiveServerTestCase):
         pass
 
     def test_snippet_delete(self):
+        pass
+
+    def test_snippet_highlight(self):
+        """
+        Snippet의 save()메서드를 참조해서
+        만들어진 Snippet인스턴스의 highlighted필드의 값이
+        pygments를 사용해서 만들어낸
+        syntax highlighted HTML과 같은지 (assertEqual)확인
+        """
         pass
